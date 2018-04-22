@@ -2,7 +2,7 @@ import copy
 import random
 
 import constants as c
-from individual import Individual
+from swarm import Swarm
 
 class Population:
     def __init__(self, pop_size = 0):
@@ -17,7 +17,7 @@ class Population:
 
     def initialize(self):
         for i in range(self.pop_size):
-            self.p[i] = Individual(i)
+            self.p[i] = Swarm()
 
     def evaluate(self, envs, pp, pb, wait_finish = False):
         for i in self.p:
@@ -33,7 +33,7 @@ class Population:
                     self.p[i].start_evaluation(envs.envs[e], pp, pb)
 
                 for i in self.p:
-                    self.p[i].compute_fitness()
+                    self.p[i].compute_fitness(envs.envs[e])
 
     def mutate(self):
         for i in self.p:

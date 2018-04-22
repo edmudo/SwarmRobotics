@@ -4,14 +4,14 @@ import math
 import numpy
 
 import constants as c
+from individual import Individual
 from robot import Robot
 
 class Swarm:
 
-    def __init__(self, num_idvs):
-        self.genome = []
-        for i in range(0, num_idvs):
-            self.genome.append(numpy.random.random((9, 5)) * 2 - 1)
+    def __init__(self):
+        self.swm_pop = []
+        self.positions = numpy.random.random((c.swm_size, 2)) * 2 - 1
         self.fitness = 0
 
     def __str__(self):
@@ -20,6 +20,11 @@ class Swarm:
     def start_evaluation(self, env, pp, pb):
         self.sim = pyrosim.Simulator(eval_time=c.eval_time, play_blind = pb,
                 play_paused = pp, dt = 0.025)
+
+        for i in range(c.swm_size):
+            indv = Individual(numpy.random.random((9, 5)) * 2 - 1)
+            indv.send_to_sim(self.sim, self.positions[i], env.eobjs['plt'])
+            self.swm_pop.append(indv)
         env.send_to_sim(self.sim)
 
         self.sim.assign_collision('robot', 'env')
@@ -27,13 +32,21 @@ class Swarm:
 
         self.sim.start()
 
-    def compute_fitness(self):
+    def compute_fitness(self, env):
         self.sim.wait_to_finish()
 
-        r1_data = self.sim.get_sensor_data(sensor_id = self.robot.S[1])
-        r2_data = self.sim.get_sensor_data(sensor_id = self.robot.S[2])
-        print(r1_data, r2_data)
+        plt_pos_data_y = self.sim.get_sensor_data(sensor_id=env.ids['plt'], svi=1)
+        plt_pos_data_z = self.sim.get_sensor_data(sensor_id=env.ids['plt'], svi=2)
 
+        print(plt_pos_data_y, plt_pos_data_z, numpy.std(plt_pos_data_z),
+                plt_pos_data_y[-1], plt_pos_data_z[-1])
+
+        print(plt_pos_data_y[-1] + plt_pos_data_z[-1]/numpy.std(plt_pos_data_z))
+
+        # We want to minimize the stdev in height, maximize height, and
+        # position of the plate from the origin
+        self.fitness = plt_pos_data_y[-1] + plt_pos_data_z[-1]/numpy.std(plt_pos_data_z)
+        print(self.fitness)
         del self.sim
 
     def mutate(self):

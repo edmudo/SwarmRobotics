@@ -35,7 +35,7 @@ class Robot:
     def send_objects(self, sim):
         self.O = {}
 
-        self.O[0] = sim.send_box(x=self.cx, y=self.cy, z=self.cz + self.rad,
+        self.O[0] = sim.send_box(x=self.cx, y=self.cy, z=self.cz + self.hgt,
                 length=self.lgt, width=self.wdt, height=self.hgt,
                 r=0.5, g=0.5, b=0.5, collision_group='robot')
 

@@ -7,7 +7,7 @@ from env_shape import EnvShape, Rectangle
 class Environment:
     def __init__(self, debug = False):
         # the object environment objs
-        self.o = []
+        self.eobjs = {}
 
         # ids of parts that have sensors
         self.ids = {}
@@ -16,7 +16,6 @@ class Environment:
         self.p = {}
 
         self.debug = debug
-
         self.set_up_env()
 
     def set_up_env(self):
@@ -24,38 +23,26 @@ class Environment:
                 c.PED_HEIGHT, True)
         plate = Rectangle(0, 0, c.PED_HEIGHT + c.PLT_HEIGHT/2, c.PLT_LENGTH,
                 c.PLT_WIDTH, c.PLT_HEIGHT, False, sensor='position', ref='plt')
-        self.o.append(ped)
-        self.o.append(plate)
+        self.eobjs[ped.ref] = ped
+        self.eobjs[plate.ref] = plate
 
     def set_placement(self, id, x, y):
-        for o in self.o:
+        for o in self.eobjs:
             excl_zone = o.get_base_area()
             print(excl_zone)
             if not o.is_off_ground() and (x >= excl_zone[0][0] and x <= excl_zone[1][0]
                     or y >= excl_zone[0][1] and y <= excl_zone[1][1]):
                 return False;
-
         self.p[id] = (x,y)
         return True;
 
     def send_to_sim(self, sim):
-        for o in self.o:
-            if isinstance(o, EnvShape):
-                id = sim.send_box(x=o.x, y=o.y, z=o.z, length=o.l, width=o.w,
-                        height=o.h, collision_group='env', r=0, g=0, b=0)
-                if o.fixed:
-                    sim.send_fixed_joint(id, -1)
+        for eobj_key in self.eobjs:
+            eobj = self.eobjs[eobj_key]
+            b_id = sim.send_box(x=eobj.x, y=eobj.y, z=eobj.z, length=eobj.l, width=eobj.w,
+                    height=eobj.h, collision_group='env', r=0, g=0, b=0)
+            if eobj.fixed:
+                sim.send_fixed_joint(first_body_id=b_id, second_body_id=-1)
+            if eobj.sensor == 'position':
+                self.ids[eobj.ref] = sim.send_position_sensor(body_id=b_id)
 
-                if o.sensor == 'position':
-                    sim.send_position_sensor(id)
-                    self.ids[o.ref] = id
-
-        # if self.debug:
-        #     sim.send_box(x=0, y=1.5, z=2, length=1, width=1, height=2)
-        #     sim.send_box(x=0, y=-3, z=2, length=1, width=1, height=2)
-        #     sim.send_box(x=3, y=0, z=2, length=1, width=1, height=2)
-        #     sim.send_box(x=-3, y=0, z=2, length=1, width=1, height=2)
-        #     sim.send_box(x=-3, y=3, z=2, length=1, width=1, height=2)
-        #     sim.send_box(x=3, y=-3, z=2, length=1, width=1, height=2)
-        #     sim.send_box(x=-3, y=-3, z=2, length=1, width=1, height=2)
-        #     sim.send_box(x=3, y=3, z=2, length=1, width=1, height=2)
