@@ -13,4 +13,4 @@ envs = Environments()
 
 for e in range(0, c.num_envs):
     best_individual.start_evaluation(envs.envs[e], pp = False, pb = False)
-    best_individual.compute_fitness()
+    best_individual.compute_fitness(envs.envs[e])

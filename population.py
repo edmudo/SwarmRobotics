@@ -17,7 +17,7 @@ class Population:
 
     def initialize(self):
         for i in range(self.pop_size):
-            self.p[i] = Swarm()
+            self.p[i] = Swarm(i)
 
     def evaluate(self, envs, pp, pb, wait_finish = False):
         for i in self.p:

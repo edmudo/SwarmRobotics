@@ -28,8 +28,8 @@ class Individual:
                 pcy + position[1]*wdt/2, 0)
 
     def mutate(self):
-        i = random.randint(0, len(self.genome[0]));
-        j = random.randint(0, len(self.genome));
+        i = random.randint(0, len(self.genome) - 1);
+        j = random.randint(0, len(self.genome[0]) - 1);
         self.genome[i][j] = random.gauss(self.genome[i][j],
                 math.fabs(self.genome[i][j]))
 

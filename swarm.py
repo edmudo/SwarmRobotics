@@ -9,7 +9,8 @@ from robot import Robot
 
 class Swarm:
 
-    def __init__(self):
+    def __init__(self, id):
+        self.id = id
         self.swm_pop = []
         self.positions = []
         self.fitness = 0
@@ -41,10 +42,10 @@ class Swarm:
         plt_pos_data_y = self.sim.get_sensor_data(sensor_id=env.ids['plt'], svi=1)
         plt_pos_data_z = self.sim.get_sensor_data(sensor_id=env.ids['plt'], svi=2)
 
-        print(plt_pos_data_y, plt_pos_data_z, numpy.std(plt_pos_data_z),
-                plt_pos_data_y[-1], plt_pos_data_z[-1])
+        # print(plt_pos_data_y, plt_pos_data_z, numpy.std(plt_pos_data_z),
+        #         plt_pos_data_y[-1], plt_pos_data_z[-1])
 
-        print(plt_pos_data_y[-1] + plt_pos_data_z[-1]/numpy.std(plt_pos_data_z))
+        # print(plt_pos_data_y[-1] + plt_pos_data_z[-1]/numpy.std(plt_pos_data_z))
 
         # We want to minimize the stdev in height, maximize height, and
         # position of the plate from the origin
@@ -53,13 +54,13 @@ class Swarm:
         del self.sim
 
     def mutate(self):
-        i = random.randint(0, 4);
-        j = random.randint(0, 7);
-        self.genome[i][j] = random.gauss(self.genome[i][j],
-                math.fabs(self.genome[i][j]))
+        m_var = random.randint(0, 1)
+        m_indv = random.randint(0, c.swm_size - 1)
 
-        if self.genome[i][j] > 1:
-            self.genome[i][j] = 1
-        elif self.genome[i][j] < -1:
-            self.genome[i][j] = -1
+        if m_var:
+            self.swm_pop[m_indv].mutate()
+        else:
+            i = random.randint(0, 1)
+            self.positions[m_indv][i] = random.gauss(self.positions[m_indv][i],
+                    math.fabs(self.positions[m_indv][i]))
 

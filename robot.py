@@ -125,7 +125,7 @@ class Robot:
                 n1=1, n2=0, n3=0, position_control=False)
 
         self.J[4] = sim.send_slider_joint(first_body_id=self.O[0],
-                second_body_id=self.O[5], x=0, y=0, z=1, lo=-self.rad, hi=0)
+                second_body_id=self.O[5], x=0, y=0, z=1, lo=-self.rad, hi=0, speed=10)
 
         sim.send_fixed_joint(first_body_id=self.O[0], second_body_id=self.O[6])
         sim.send_fixed_joint(first_body_id=self.O[0], second_body_id=self.O[7])
