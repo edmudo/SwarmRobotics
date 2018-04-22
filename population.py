@@ -31,7 +31,6 @@ class Population:
             else:
                 for i in self.p:
                     self.p[i].start_evaluation(envs.envs[e], pp, pb)
-
                 for i in self.p:
                     self.p[i].compute_fitness(envs.envs[e])
 

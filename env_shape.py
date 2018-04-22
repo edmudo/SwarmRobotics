@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 class EnvShape(ABC):
     _ref_id = 0
 
-    def __init__(self, x, y, z, fixed, sensor, ref):
+    def __init__(self, x, y, z, fixed, sensor, ref, cg):
         self.x = x
         self.y = y
         self.z = z
@@ -15,6 +15,7 @@ class EnvShape(ABC):
         self.ref = ref
         self.fixed = fixed
         self.sensor = sensor
+        self.cg = cg
 
     @abstractmethod
     def is_off_ground(self):
@@ -25,8 +26,8 @@ class EnvShape(ABC):
         return
 
 class Rectangle(EnvShape):
-    def __init__(self, x, y, z, l, w, h, fixed, sensor='none', ref=-1):
-        super(Rectangle, self).__init__(x, y, z, fixed, sensor, ref)
+    def __init__(self, x, y, z, l, w, h, fixed, sensor='none', ref=-1, cg='env'):
+        super(Rectangle, self).__init__(x, y, z, fixed, sensor, ref, cg)
 
         self.l = l
         self.w = w

@@ -11,8 +11,13 @@ class Swarm:
 
     def __init__(self):
         self.swm_pop = []
-        self.positions = numpy.random.random((c.swm_size, 2)) * 2 - 1
+        self.positions = []
         self.fitness = 0
+
+        for i in range(c.swm_size):
+            indv = Individual()
+            self.positions.append(numpy.random.rand(1, 2)[0])
+            self.swm_pop.append(indv)
 
     def __str__(self):
         return  "[" + str(self.id) + " " + str(self.fitness) + "]"
@@ -21,14 +26,12 @@ class Swarm:
         self.sim = pyrosim.Simulator(eval_time=c.eval_time, play_blind = pb,
                 play_paused = pp, dt = 0.025)
 
-        for i in range(c.swm_size):
-            indv = Individual(numpy.random.random((9, 5)) * 2 - 1)
+        for i, indv in enumerate(self.swm_pop):
             indv.send_to_sim(self.sim, self.positions[i], env.eobjs['plt'])
-            self.swm_pop.append(indv)
         env.send_to_sim(self.sim)
 
         self.sim.assign_collision('robot', 'env')
-        self.sim.assign_collision('env', 'env')
+        self.sim.assign_collision('env', 'env_c')
 
         self.sim.start()
 

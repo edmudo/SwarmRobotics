@@ -8,9 +8,8 @@ from robot import Robot
 
 class Individual:
 
-    def __init__(self, genome):
-        self.id = id
-        self.genome = genome
+    def __init__(self):
+        self.genome = numpy.random.random((9, 5)) * 2 - 1
 
     def __str__(self):
         return  "[" + str(self.id) + " " + str(self.fitness) + "]"
