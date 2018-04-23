@@ -174,6 +174,7 @@ class Robot:
                 self.rad*math.cos(PI4) - ofs, y=self.cy +
                 self.rad*math.sin(PI4) + ofs, z=self.cz + 2*self.hgt, r1=-1,
                 r2=1, r3=0)
+        self.P = sim.send_position_sensor(body_id=self.O[0])
 
     def send_neurons(self, sim):
         self.SN = {}

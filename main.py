@@ -16,6 +16,10 @@ parents.initialize()
 parents.evaluate(envs, pp=False, pb=True)
 print("g: 0", parents)
 
+file = open('robota.p', 'wb')
+pickle.dump(parents.p[0], file)
+file.close()
+
 for g in range(1, c.num_gens):
     # create an empty population
     children = Population(c.pop_size)
@@ -28,7 +32,7 @@ for g in range(1, c.num_gens):
     parents = children
 
 # Save best to file
-file = open('robot.p', 'wb')
+file = open('robotb.p', 'wb')
 pickle.dump(parents.p[0], file)
 file.close()
 
