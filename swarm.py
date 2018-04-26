@@ -17,7 +17,7 @@ class Swarm:
 
         for i in range(c.swm_size):
             indv = Individual()
-            self.positions.append(numpy.random.rand(1, 2)[0])
+            self.positions.append(numpy.random.rand(1, 2)[0] * 2 - 1)
             self.swm_pop.append(indv)
 
     def __str__(self):
@@ -28,41 +28,46 @@ class Swarm:
                 play_paused = pp, dt = 0.025)
 
         for i, indv in enumerate(self.swm_pop):
-            indv.send_to_sim(self.sim, self.positions[i], env.eobjs['plt'])
+            indv.send_to_sim(self.sim, self.positions[i],
+                    0, 0, c.PLT_LENGTH, c.PLT_WIDTH)
         env.send_to_sim(self.sim)
 
         self.sim.assign_collision('robot', 'env')
-        # self.sim.assign_collision('env', 'env_c')
+        self.sim.assign_collision('env', 'env_c')
 
         self.sim.start()
 
     def compute_fitness(self, env):
         self.sim.wait_to_finish()
 
-        plt_pos_data_y = self.sim.get_sensor_data(sensor_id=env.ids['plt'][1], svi=1)
-        plt_pos_data_z = self.sim.get_sensor_data(sensor_id=env.ids['plt'][1], svi=2)
+        plt_posx_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=0)
+        plt_posy_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=1)
+        plt_posz_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=2)
 
         max_sep = 0
-        for i in range(0, c.swm_size - 1):
-            for j in range(i, c.swm_size - 1):
-                pos_1 = numpy.amax(self.sim.get_sensor_data(self.swm_pop[i].robot.P))
-                pos_2 = numpy.amax(self.sim.get_sensor_data(self.swm_pop[j].robot.P))
-                max_sep = max(max_sep, pos_1, pos_2)
+        tch_arr = []
+        for i in range(c.swm_size):
+            tch_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.T)[-1])
+            r_posx = numpy.amax(self.sim.get_sensor_data(self.swm_pop[i].robot.P, svi=0))
+            r_posy = numpy.amax(self.sim.get_sensor_data(self.swm_pop[i].robot.P, svi=1))
+            max_sep = max(max_sep, math.sqrt(math.pow(r_posx-plt_posx_data[-1], 2) +
+                math.pow(r_posy-plt_posy_data[-1], 2)))
 
-        sep_fitness_penalty = 0
-        if max_sep > c.PLT_LENGTH:
-            sep_fitness_penalty = max_sep - c.PLT_LENGTH
+        touch_thd = min(tch_arr)
+        sep_penalty = max_sep
+        if max_sep - c.PLT_LENGTH/2 < 0:
+            sep_penalty = 0
+        # print(tch_arr)
+        # print("TESTING:", touch_thd, sep_penalty)
 
-        # print(plt_pos_data_y, plt_pos_data_z, numpy.std(plt_pos_data_z),
-        #         plt_pos_data_y[-1], plt_pos_data_z[-1])
-
-        # print(plt_pos_data_y[-1] + plt_pos_data_z[-1]/numpy.std(plt_pos_data_z))
+        # print(plt_posy_data, plt_posz_data, numpy.std(plt_posz_data),
+        #         plt_posy_data[-1], plt_posz_data[-1])
 
         # We want to minimize the stdev in height, maximize height, and
         # position of the plate from the origin
-        self.fitness = (plt_pos_data_y[-1]
-                + plt_pos_data_z[-1]/(1 + numpy.std(plt_pos_data_z))
-                - sep_fitness_penalty)
+        self.fitness = touch_thd*(plt_posy_data[-1]
+                + plt_posz_data[-1]/(1 + numpy.std(plt_posz_data))
+                - sep_penalty)
         del self.sim
 
     def mutate(self):
