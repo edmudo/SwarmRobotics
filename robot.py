@@ -42,25 +42,25 @@ class Robot:
         self.O[1] = sim.send_cylinder(x=self.cx - self.wheel_rel_x,
                     y=self.cy - self.wheel_rel_y, z=self.cz + self.rad,
                 length=self.rad, radius=self.rad, r1=-1, r2=0, r3=0,
-                r=0.75, g=0, b=0, collision_group='robot', capped=False)
+                r=0.75, g=0, b=0, collision_group='robot', capped=False, mass=20)
 
         self.O[2] = sim.send_cylinder(x=self.cx - self.wheel_rel_x,
                     y=self.cy + self.wheel_rel_y, z=self.cz + self.rad,
                 length=self.rad, radius=self.rad, r1=-1, r2=0, r3=0,
-                r=0.75, g=0, b=0, collision_group='robot', capped=False)
+                r=0.75, g=0, b=0, collision_group='robot', capped=False, mass=20)
 
         self.O[3] = sim.send_cylinder(x=self.cx + self.wheel_rel_x,
                     y=self.cy - self.wheel_rel_y, z=self.cz + self.rad,
                 length=self.rad, radius=self.rad, r1=1, r2=0, r3=0,
-                r=0.75, g=0, b=0, collision_group='robot', capped=False)
+                r=0.75, g=0, b=0, collision_group='robot', capped=False, mass=20)
 
         self.O[4] = sim.send_cylinder(x=self.cx + self.wheel_rel_x,
                     y=self.cy + self.wheel_rel_y, z=self.cz + self.rad,
                 length=self.rad, radius=self.rad, r1=1, r2=0, r3=0,
-                r=0.75, g=0, b=0, collision_group='robot', capped=False)
+                r=0.75, g=0, b=0, collision_group='robot', capped=False, mass=20)
 
         self.O[5] = sim.send_cylinder(x=self.cx, y=self.cy, z=self.cz + 2*self.rad,
-                length=3*self.rad, radius=self.rad, r1=0, r2=0, r3=1,
+                length=2.5*self.rad, radius=self.rad, r1=0, r2=0, r3=1,
                 r=0.75, g=0, b=0, collision_group='robot', capped=False)
 
         # dud objects for sensors
@@ -146,7 +146,7 @@ class Robot:
         # a small offset for sensors due to rounding errors
         ofs = 0.001
 
-        self.S[0] = sim.send_touch_sensor(body_id=self.O[5])
+        self.S[0] = self.T = sim.send_touch_sensor(body_id=self.O[5])
 
         self.S[1] = sim.send_ray_sensor(body_id=self.O[6], x=self.cx, y=self.cy
                 + self.rad + ofs, z=self.cz + 2*self.hgt, r1=0, r2=1, r3=0)

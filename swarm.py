@@ -57,7 +57,6 @@ class Swarm:
         sep_penalty = max_sep
         if max_sep - c.PLT_LENGTH/2 < 0:
             sep_penalty = 0
-        # print(tch_arr)
         # print("TESTING:", touch_thd, sep_penalty)
 
         # print(plt_posy_data, plt_posz_data, numpy.std(plt_posz_data),
