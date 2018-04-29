@@ -26,5 +26,5 @@ eval_time = 500
 swm_size = 3
 pop_size = 10
 num_envs = 1
-num_gens = 50
+num_iter = 50
 

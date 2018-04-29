@@ -9,8 +9,12 @@ from robot import Robot
 
 class Swarm:
 
-    def __init__(self, id):
-        self.id = id
+    def __init__(self, lineage_id):
+        # evolution info
+        self.lineage_id = lineage_id
+        self.gen = 0
+
+        # swarm
         self.swm_pop = []
         self.positions = []
         self.fitness = 0
@@ -28,7 +32,9 @@ class Swarm:
             self.swm_pop.append(indv)
 
     def __str__(self):
-        return  "[" + str(self.id) + " " + str(self.fitness) + "]"
+        str_arr = [str(self.gen), '[', str(self.lineage_id), ' ',
+                str(self.fitness), ']']
+        return ''.join(str_arr)
 
     def start_evaluation(self, env, pp, pb):
         self.sim = pyrosim.Simulator(eval_time=c.eval_time, play_blind = pb,
@@ -87,6 +93,7 @@ class Swarm:
         m_indv = random.randint(0, c.swm_size - 1)
 
         # either mutate the individual or its position
+        m_var = random.randint(0, 1)
         if m_var:
             self.swm_pop[m_indv].mutate()
         else:
@@ -98,6 +105,8 @@ class Swarm:
                 m_position = self._mutate_pos(self.positions[m_indv], factor)
 
             self.positions[m_indv] = m_position
+
+        self.gen += 1
 
     def _mutate_pos(self, position, factor=1):
         m_position = numpy.copy(position)
