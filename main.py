@@ -36,7 +36,6 @@ def simulate(init_pop=None, interval=-1, len_time=-1, save_indv=True,
 
     for i in range(1, num_iter):
         # check if time limit has been exceeded
-        end_time = time.time()
         if len_time > 0 and end_time - start_time > len_time:
             break
 
@@ -49,6 +48,8 @@ def simulate(init_pop=None, interval=-1, len_time=-1, save_indv=True,
 
         print("i:", i, children)
         parents = children
+
+        end_time = time.time()
 
     print("Time elapsed: ", end_time - start_time, "sec")
 
