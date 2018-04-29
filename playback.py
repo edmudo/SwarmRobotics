@@ -15,7 +15,10 @@ fileb.close()
 envs = Environments()
 
 for e in range(0, c.num_envs):
-    strt_individual.start_evaluation(envs.envs[e], pp = False, pb = False)
+    strt_individual.start_evaluation(envs.envs[e], pp = True, pb = False)
     strt_individual.compute_fitness(envs.envs[e])
     best_individual.start_evaluation(envs.envs[e], pp = False, pb = False)
     best_individual.compute_fitness(envs.envs[e])
+
+print(strt_individual.fitness)
+print(best_individual.fitness)
