@@ -9,15 +9,20 @@ from robot import Robot
 
 class Swarm:
 
-    def __init__(self, lineage_id):
+    SWARM_ID = 0
+
+    def __init__(self):
         # evolution info
-        self.lineage_id = lineage_id
+        self.lineage_id = Swarm.SWARM_ID
+        self.lineage_age = 0
         self.gen = 0
 
         # swarm
         self.swm_pop = []
         self.positions = []
         self.fitness = 0
+
+        Swarm.SWARM_ID += 1
 
         for i in range(c.swm_size):
             indv = Individual()
@@ -79,12 +84,14 @@ class Swarm:
         if max_sep - c.PLT_LENGTH/2 < 0:
             sep_penalty = 0
 
-        # We want to minimize the stdev in height, maximize height, position of
+        # We want to minimize the stdev in height, maximize height and position of
         # the plate from the origin, minimize separation, and ensure that the
         # robots are touching the plate
-        self.fitness = touch_thd*(plt_posy_data[-1]
+        self.fitness = touch_thd*(abs(plt_posy_data[-1])
                 + plt_posz_data[-1]/(1 + numpy.std(plt_posz_data))
                 - sep_penalty)
+
+        self.lineage_age += 1
 
         del self.sim
 

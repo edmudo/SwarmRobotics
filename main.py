@@ -17,7 +17,6 @@ def simulate(init_pop=None, interval=-1, len_time=-1, save_indv=True,
     # Create population
     if init_pop is None:
         parents = Population(c.pop_size)
-        parents.initialize()
     else:
         parents = init_pop
 
@@ -40,7 +39,7 @@ def simulate(init_pop=None, interval=-1, len_time=-1, save_indv=True,
             break
 
         # create an empty population
-        children = Population(c.pop_size)
+        children = Population(0)
 
         # fill with mutated versions of (likely) the best parents
         children.fill_from(parents)
