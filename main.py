@@ -1,6 +1,5 @@
 import pyrosim
 
-import copy
 import pickle
 import time
 
@@ -94,8 +93,6 @@ if __name__ == "__main__":
     parser.add_argument('--save-pop', action='store_true',
             help='Whether to save the population.')
     args = parser.parse_args()
-
-    print(vars(args))
 
     if hasattr(args, 'playback'):
         if len(args.playback) < 1:
