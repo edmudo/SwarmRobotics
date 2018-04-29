@@ -11,9 +11,12 @@ class Robot:
         self.cy = cy
         self.cz = cz
 
-        self.lgt = c.BASE
-        self.wdt = c.BASE/2
-        self.hgt = self.rad = c.BASE/5
+        self.lgt = c.R_LENGTH
+        self.wdt = c.R_WIDTH
+        self.hgt = c.R_HEIGHT
+        self.rad = c.R_RADIUS
+        self.wlt = c.R_WLENGTH
+        self.alt = c.R_ALENGTH
 
         self.wheel_rel_x = self.wdt/2 + self.rad/2
         self.wheel_rel_y = self.lgt/2
@@ -41,61 +44,61 @@ class Robot:
 
         self.O[1] = sim.send_cylinder(x=self.cx - self.wheel_rel_x,
                     y=self.cy - self.wheel_rel_y, z=self.cz + self.rad,
-                length=self.rad, radius=self.rad, r1=-1, r2=0, r3=0,
+                length=self.wlt, radius=self.rad, r1=-1, r2=0, r3=0,
                 r=0.75, g=0, b=0, collision_group='robot', capped=False, mass=20)
 
         self.O[2] = sim.send_cylinder(x=self.cx - self.wheel_rel_x,
                     y=self.cy + self.wheel_rel_y, z=self.cz + self.rad,
-                length=self.rad, radius=self.rad, r1=-1, r2=0, r3=0,
+                length=self.wlt, radius=self.rad, r1=-1, r2=0, r3=0,
                 r=0.75, g=0, b=0, collision_group='robot', capped=False, mass=20)
 
         self.O[3] = sim.send_cylinder(x=self.cx + self.wheel_rel_x,
                     y=self.cy - self.wheel_rel_y, z=self.cz + self.rad,
-                length=self.rad, radius=self.rad, r1=1, r2=0, r3=0,
+                length=self.wlt, radius=self.rad, r1=1, r2=0, r3=0,
                 r=0.75, g=0, b=0, collision_group='robot', capped=False, mass=20)
 
         self.O[4] = sim.send_cylinder(x=self.cx + self.wheel_rel_x,
                     y=self.cy + self.wheel_rel_y, z=self.cz + self.rad,
-                length=self.rad, radius=self.rad, r1=1, r2=0, r3=0,
+                length=self.wlt, radius=self.rad, r1=1, r2=0, r3=0,
                 r=0.75, g=0, b=0, collision_group='robot', capped=False, mass=20)
 
         self.O[5] = sim.send_cylinder(x=self.cx, y=self.cy, z=self.cz + 2*self.rad,
-                length=2.5*self.rad, radius=self.rad, r1=0, r2=0, r3=1,
+                length=self.alt, radius=self.rad, r1=0, r2=0, r3=1,
                 r=0.75, g=0, b=0, collision_group='robot', capped=False)
 
         # dud objects for sensors
 
         self.O[6] = sim.send_box(x=self.cx, y=self.cy, z=self.cz + self.rad,
                 length=self.lgt/3, width=self.wdt/3, height=self.hgt/3,
-                r=0.5, g=0.5, b=0.5, collision_group='robot')
+                r=0.5, g=0.5, b=0.5, collision_group='robot_d')
 
         self.O[7] = sim.send_box(x=self.cx, y=self.cy, z=self.cz + self.rad,
                 length=self.lgt/3, width=self.wdt/3, height=self.hgt/3,
-                r=0.5, g=0.5, b=0.5, collision_group='robot')
+                r=0.5, g=0.5, b=0.5, collision_group='robot_d')
 
         self.O[8] = sim.send_box(x=self.cx, y=self.cy, z=self.cz + self.rad,
                 length=self.lgt/3, width=self.wdt/3, height=self.hgt/3,
-                r=0.5, g=0.5, b=0.5, collision_group='robot')
+                r=0.5, g=0.5, b=0.5, collision_group='robot_d')
 
         self.O[9] = sim.send_box(x=self.cx, y=self.cy, z=self.cz + self.rad,
                 length=self.lgt/3, width=self.wdt/3, height=self.hgt/3,
-                r=0.5, g=0.5, b=0.5, collision_group='robot')
+                r=0.5, g=0.5, b=0.5, collision_group='robot_d')
 
         self.O[10] = sim.send_box(x=self.cx, y=self.cy, z=self.cz + self.rad,
                 length=self.lgt/3, width=self.wdt/3, height=self.hgt/3,
-                r=0.5, g=0.5, b=0.5, collision_group='robot')
+                r=0.5, g=0.5, b=0.5, collision_group='robot_d')
 
         self.O[11] = sim.send_box(x=self.cx, y=self.cy, z=self.cz + self.rad,
                 length=self.lgt/3, width=self.wdt/3, height=self.hgt/3,
-                r=0.5, g=0.5, b=0.5, collision_group='robot')
+                r=0.5, g=0.5, b=0.5, collision_group='robot_d')
 
         self.O[12] = sim.send_box(x=self.cx, y=self.cy, z=self.cz + self.rad,
                 length=self.lgt/3, width=self.wdt/3, height=self.hgt/3,
-                r=0.5, g=0.5, b=0.5, collision_group='robot')
+                r=0.5, g=0.5, b=0.5, collision_group='robot_d')
 
         self.O[13] = sim.send_box(x=self.cx, y=self.cy, z=self.cz + self.rad,
                 length=self.lgt/3, width=self.wdt/3, height=self.hgt/3,
-                r=0.5, g=0.5, b=0.5, collision_group='robot')
+                r=0.5, g=0.5, b=0.5, collision_group='robot_d')
 
     def send_joints(self, sim):
         self.J = {}
