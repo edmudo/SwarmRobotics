@@ -128,7 +128,7 @@ class Robot:
                 n1=1, n2=0, n3=0, position_control=False)
 
         self.J[4] = sim.send_slider_joint(first_body_id=self.O[0],
-                second_body_id=self.O[5], x=0, y=0, z=1, lo=-self.rad, hi=0, speed=10)
+                second_body_id=self.O[5], x=0, y=0, z=1, lo=-2*self.rad, hi=0, speed=10)
 
         sim.send_fixed_joint(first_body_id=self.O[0], second_body_id=self.O[6])
         sim.send_fixed_joint(first_body_id=self.O[0], second_body_id=self.O[7])
@@ -177,6 +177,8 @@ class Robot:
                 self.rad*math.cos(PI4) - ofs, y=self.cy +
                 self.rad*math.sin(PI4) + ofs, z=self.cz + 2*self.hgt, r1=-1,
                 r2=1, r3=0)
+        self.S[9] = self.AV = sim.send_ray_sensor(body_id=self.O[5], x=self.cx,
+                y=self.cy, z=self.cz + 2*self.rad + self.alt/2, r1=0, r2=0, r3=1)
         self.P = sim.send_position_sensor(body_id=self.O[0])
 
     def send_neurons(self, sim):
@@ -193,7 +195,4 @@ class Robot:
             for j in self.MN:
                 sim.send_synapse(source_neuron_id = self.SN[i],
                         target_neuron_id = self.MN[j], weight = wts[i][j])
-
-        # sim.send_synapse(source_neuron_id = self.SN[0],
-        #         target_neuron_id = self.MN[4], weight = 1)
 

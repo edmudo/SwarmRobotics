@@ -1,5 +1,6 @@
 import copy
 import random
+import numpy
 
 import constants as c
 from swarm import Swarm
@@ -20,9 +21,6 @@ class Population:
     def evaluate(self, envs, pp, pb, wait_finish = False):
         for i in self.p:
             self.p[i].fitness = 0
-
-        if random.random() <= c.inj_thd:
-            self.p[self.pop_size] = Swarm()
 
         for e in range(0, c.num_envs):
             if wait_finish:
@@ -68,19 +66,17 @@ class Population:
                 and self.p[p2].fitness >= self.p[p1].fitness):
             return self.p[p2]
 
-        return self.p[p1]
+        return self.p[p1] if self.p[p1].lineage_age > self.p[p2].lineage_age else self.p[p2]
 
     def collect_children_from(self, other):
         self.pop_size = other.pop_size
         for i in range(1, self.pop_size):
-            winner = other.winner_of_tournament_selection()
-            self.p[i] = copy.deepcopy(winner)
-            self.p[i].mutate()
-
-        if len(other.p) == other.pop_size + 1:
-            # this protects the injected individual
-            self.p[self.pop_size] = copy.deepcopy(other.p[other.pop_size])
-            self.p[self.pop_size].mutate()
+            if random.random() <= c.inj_thd:
+                self.p[i] = Swarm()
+            else:
+                winner = other.winner_of_tournament_selection()
+                self.p[i] = copy.deepcopy(winner)
+                self.p[i].mutate()
 
     def fill_from(self, other):
         self.copy_best_from(other)

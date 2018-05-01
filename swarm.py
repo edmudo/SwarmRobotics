@@ -66,30 +66,31 @@ class Swarm:
 
         max_sep = 0
         tch_arr = []
+        vry_arr = []
 
         # perform calculations for each robot
         for i in range(c.swm_size):
             # gather sensor information
+            vry_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.AV)[-1])
             tch_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.T)[-1])
-            r_posx = numpy.amax(self.sim.get_sensor_data(self.swm_pop[i].robot.P, svi=0))
-            r_posy = numpy.amax(self.sim.get_sensor_data(self.swm_pop[i].robot.P, svi=1))
 
             # compute the separation between the robot and the plate
+            r_posx = numpy.amax(self.sim.get_sensor_data(self.swm_pop[i].robot.P, svi=0))
+            r_posy = numpy.amax(self.sim.get_sensor_data(self.swm_pop[i].robot.P, svi=1))
             max_sep = max(max_sep, math.sqrt(math.pow(r_posx-plt_posx_data[-1], 2) +
                 math.pow(r_posy-plt_posy_data[-1], 2)))
 
         # calucate fitness variables
-        touch_thd = min(tch_arr)
+        touch_thd = 1 if min(tch_arr) == 1 and max(vry_arr) < 0.1 else 0
         sep_penalty = max_sep
         if max_sep - c.PLT_LENGTH/2 < 0:
             sep_penalty = 0
 
-        # We want to minimize the stdev in height, maximize height and position of
-        # the plate from the origin, minimize separation, and ensure that the
-        # robots are touching the plate
+        # We want to minimize the stdev in height, maximize height and position
+        # of the plate from the origin, and ensure that the robots are touching
+        # the plate
         self.fitness = touch_thd*(abs(plt_posy_data[-1])
-                + plt_posz_data[-1]/(1 + numpy.std(plt_posz_data))
-                - sep_penalty)
+                * plt_posz_data[-1]/(1 + numpy.std(plt_posz_data)))
 
         self.lineage_age += 1
 
