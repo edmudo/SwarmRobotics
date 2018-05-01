@@ -60,11 +60,16 @@ class Swarm:
         self.sim.wait_to_finish()
 
         # plate position data
-        plt_posx_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=0)
-        plt_posy_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=1)
-        plt_posz_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=2)
+        plt1_posx_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=0)
+        plt1_posy_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=1)
+        plt1_posz_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=2)
 
-        max_sep = 0
+        plt2_posx_data = self.sim.get_sensor_data(sensor_id=env.ids['plt2'][1], svi=0)
+        plt2_posy_data = self.sim.get_sensor_data(sensor_id=env.ids['plt2'][1], svi=1)
+        plt2_posz_data = self.sim.get_sensor_data(sensor_id=env.ids['plt2'][1], svi=2)
+
+        plt_posz_data = numpy.stack((plt1_posz_data, plt2_posz_data))
+
         tch_arr = []
         vry_arr = []
 
@@ -74,23 +79,17 @@ class Swarm:
             vry_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.AV)[-1])
             tch_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.T)[-1])
 
-            # compute the separation between the robot and the plate
-            r_posx = numpy.amax(self.sim.get_sensor_data(self.swm_pop[i].robot.P, svi=0))
-            r_posy = numpy.amax(self.sim.get_sensor_data(self.swm_pop[i].robot.P, svi=1))
-            max_sep = max(max_sep, math.sqrt(math.pow(r_posx-plt_posx_data[-1], 2) +
-                math.pow(r_posy-plt_posy_data[-1], 2)))
-
         # calucate fitness variables
         touch_thd = 1 if min(tch_arr) == 1 and max(vry_arr) < 0.1 else 0
-        sep_penalty = max_sep
-        if max_sep - c.PLT_LENGTH/2 < 0:
-            sep_penalty = 0
+        x_pos = (plt1_posx_data[-1] + plt2_posx_data[-1])/2
+        y_pos = (plt1_posy_data[-1] + plt2_posy_data[-1])/2
+        z_pos = (plt1_posz_data[-1] + plt2_posz_data[-1])/2
+        dist = math.sqrt(math.pow(x_pos, 2) + math.pow(y_pos, 2))
 
         # We want to minimize the stdev in height, maximize height and position
         # of the plate from the origin, and ensure that the robots are touching
         # the plate
-        self.fitness = touch_thd*(abs(plt_posy_data[-1])
-                * plt_posz_data[-1]/(1 + numpy.std(plt_posz_data)))
+        self.fitness = touch_thd * dist * z_pos/(1 + numpy.std(plt_posz_data))
 
         self.lineage_age += 1
 
@@ -142,4 +141,3 @@ class Swarm:
                 return False
 
         return True
-

@@ -35,7 +35,7 @@ class Environment:
 
         plate2 = Rectangle(x=0, y=-plt_comp_y_adj, z=plt_comp_hgt_adj,
                 l=c.PLT_COMP_WIDTH, w=c.PLT_COMP_LENGTH, h=c.PLT_COMP_HEIGHT,
-                fixed=True, fixed_to=plate1.ref, ref='plt2')
+                fixed=True, sensor='position', fixed_to=plate1.ref, ref='plt2')
         self.eobjs[plate2.ref] = plate2
 
         plate3 = Rectangle(x=plt_comp_x_adj, y=0, z=plt_comp_hgt_adj,
