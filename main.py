@@ -56,7 +56,7 @@ def simulate(init_pop=None, interval=-1, len_time=-1, save_indv=True,
     if save_indv:
         save('robotb.p', parents.p[0])
     if save_pop:
-        save('pop.p', parents)
+        save('population.p', parents)
 
 def save(filename, obj):
     file = open(filename, 'wb')
