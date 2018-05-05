@@ -17,6 +17,8 @@ class Swarm:
         self.lineage_age = 0
         self.gen = 0
 
+        self.last_data = {}
+
         # swarm
         self.swm_pop = []
         self.positions = []
@@ -59,39 +61,50 @@ class Swarm:
     def compute_fitness(self, env):
         self.sim.wait_to_finish()
 
-        # plate position data
-        plt1_posx_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=0)
-        plt1_posy_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=1)
-        plt1_posz_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=2)
+        # center plate position data
+        plt1_pos_x_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=0)
+        plt1_pos_y_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=1)
+        plt1_pos_z_data = self.sim.get_sensor_data(sensor_id=env.ids['plt1'][1], svi=2)
 
-        plt2_posx_data = self.sim.get_sensor_data(sensor_id=env.ids['plt2'][1], svi=0)
-        plt2_posy_data = self.sim.get_sensor_data(sensor_id=env.ids['plt2'][1], svi=1)
-        plt2_posz_data = self.sim.get_sensor_data(sensor_id=env.ids['plt2'][1], svi=2)
+        plt2_pos_x_data = self.sim.get_sensor_data(sensor_id=env.ids['plt2'][1], svi=0)
+        plt2_pos_y_data = self.sim.get_sensor_data(sensor_id=env.ids['plt2'][1], svi=1)
+        plt2_pos_z_data = self.sim.get_sensor_data(sensor_id=env.ids['plt2'][1], svi=2)
 
-        plt_posz_data = numpy.stack((plt1_posz_data, plt2_posz_data))
+        plt_pos_x_data = (plt1_pos_x_data + plt2_pos_x_data)/2
+        plt_pos_y_data = (plt1_pos_y_data + plt2_pos_y_data)/2
+        plt_pos_z_data = (plt1_pos_z_data + plt2_pos_z_data)/2
 
+        # gather sensor data for each robot
         tch_arr = []
         vry_arr = []
+        pos_x_arr = []
+        pos_y_arr = []
 
-        # perform calculations for each robot
         for i in range(c.swm_size):
-            # gather sensor information
             vry_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.AV)[-1])
             tch_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.T)[-1])
+            pos_x_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.P, svi=0))
+            pos_y_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.P, svi=1))
 
         # calucate fitness variables
         touch_thd = 1 if min(tch_arr) == 1 and max(vry_arr) < 0.1 else 0
-        x_pos = (plt1_posx_data[-1] + plt2_posx_data[-1])/2
-        y_pos = (plt1_posy_data[-1] + plt2_posy_data[-1])/2
-        z_pos = (plt1_posz_data[-1] + plt2_posz_data[-1])/2
-        dist = math.sqrt(math.pow(x_pos, 2) + math.pow(y_pos, 2))
+        plt_x_end = plt_pos_x_data[-1]
+        plt_y_end = plt_pos_y_data[-1]
+        plt_z_end = plt_pos_z_data[-1]
+        plt_dist = math.sqrt(math.pow(plt_x_end, 2) + math.pow(plt_y_end, 2))
 
         # We want to minimize the stdev in height, maximize height and position
         # of the plate from the origin, and ensure that the robots are touching
         # the plate
-        self.fitness = touch_thd * dist * z_pos/(1 + numpy.std(plt_posz_data))
+        self.fitness = touch_thd * plt_dist * plt_z_end/(1 + numpy.std(plt_pos_z_data))
 
         self.lineage_age += 1
+
+        self.last_data['plt_pos_x'] = plt_pos_x_data
+        self.last_data['plt_pos_y'] = plt_pos_y_data
+        self.last_data['plt_pos_z'] = plt_pos_z_data
+        self.last_data['bots_pos_x'] = pos_x_arr
+        self.last_data['bots_pos_y'] = pos_y_arr
 
         del self.sim
 
@@ -141,3 +154,28 @@ class Swarm:
                 return False
 
         return True
+
+    def get_data(self, key=None):
+        if key is not None:
+            return self.last_data[key]
+
+        data = {}
+
+        bots_pos_x = self.last_data['bots_pos_x']
+        bots_pos_y = self.last_data['bots_pos_y']
+        plt_pos_x = self.last_data['plt_pos_x']
+        plt_pos_y = self.last_data['plt_pos_y']
+
+        # for graphing purposes
+        for i in range(c.swm_size):
+            start_rel_x = bots_pos_x[i][0] - plt_pos_x[0]
+            start_rel_y = bots_pos_y[i][0] - plt_pos_y[0]
+
+            end_rel_x = bots_pos_x[i][-1] - plt_pos_x[-1]
+            end_rel_y = bots_pos_y[i][-1] - plt_pos_y[-1]
+
+            data['start_pos'] = (start_rel_x, start_rel_y)
+            data['end_pos'] = (end_rel_x, end_rel_y)
+
+        return data
+

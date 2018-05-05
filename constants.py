@@ -27,5 +27,5 @@ swm_size = 3
 pop_size = 25
 num_envs = 1
 num_iter = 50
-inj_thd = 0.2
+inj_thd = 0.12
 

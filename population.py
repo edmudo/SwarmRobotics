@@ -26,7 +26,7 @@ class Population:
             if wait_finish:
                 for i in self.p:
                     self.p[i].start_evaluation(envs.envs[e], pp, pb)
-                    self.p[i].compute_fitness()
+                    self.p[i].compute_fitness(envs.envs[e])
             else:
                 for i in self.p:
                     self.p[i].start_evaluation(envs.envs[e], pp, pb)
@@ -36,6 +36,21 @@ class Population:
     def mutate(self):
         for i in self.p:
             self.p[i].mutate()
+
+    def get_population_data(self):
+        start_pos_data = []
+        end_pos_data = []
+        fitness_data = []
+
+        for i in self.p:
+            swm_data = self.p[i].get_data()
+            start_pos_data.append(swm_data['start_pos'])
+            end_pos_data.append(swm_data['end_pos'])
+
+            fitness_pt = (self.p[i].lineage_id, self.p[i].fitness)
+            fitness_data.append(fitness_pt)
+
+        return (start_pos_data, end_pos_data, fitness_data)
 
     def replace_with(self, other):
         for i in self.p:

@@ -3,7 +3,9 @@ tags
 
 .ropeproject
 __pycache__
+cand*/
 *.pyc
 *.swp
+*.csv
 
 /*.p
