@@ -43,9 +43,10 @@ class Population:
         fitness_data = []
 
         for i in self.p:
-            swm_data = self.p[i].get_data()
-            start_pos_data.append(swm_data['start_pos'])
-            end_pos_data.append(swm_data['end_pos'])
+            if i == 0:
+                swm_data = self.p[i].get_data()
+                start_pos_data.append(swm_data['start_pos'])
+                end_pos_data.append(swm_data['end_pos'])
 
             fitness_pt = (self.p[i].lineage_id, self.p[i].fitness)
             fitness_data.append(fitness_pt)

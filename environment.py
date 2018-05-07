@@ -16,17 +16,11 @@ class Environment:
         self.set_up_env()
 
     def set_up_env(self):
+        init_z = c.BASE
+
         plt_comp_x_adj = c.PLT_LENGTH/2 - c.PLT_COMP_WIDTH/2
         plt_comp_y_adj = c.PLT_WIDTH/2 - c.PLT_COMP_WIDTH/2
-        plt_comp_hgt_adj = c.PED_HEIGHT + c.PLT_COMP_HEIGHT/2
-
-        # ped = Rectangle(x=0, y=0, z=c.PED_HEIGHT/2, l=c.PED_LENGTH, w=c.PED_WIDTH,
-        #         h=c.PED_HEIGHT, fixed=True, cg='env_c')
-        # self.eobjs[ped.ref] = ped
-
-        # plate = Rectangle(x=0, y=0, z=c.PED_HEIGHT + c.PLT_HEIGHT/2, l=c.PLT_LENGTH,
-        #         w=c.PLT_WIDTH, h=c.PLT_HEIGHT, fixed=False, sensor='position', ref='plt')
-        # self.eobjs[plate.ref] = plate
+        plt_comp_hgt_adj = init_z + c.PED_HEIGHT + c.PLT_COMP_HEIGHT/2
 
         plate1 = Rectangle(x=0, y=plt_comp_y_adj, z=plt_comp_hgt_adj,
                 l=c.PLT_COMP_WIDTH, w=c.PLT_COMP_LENGTH, h=c.PLT_COMP_HEIGHT,
@@ -59,8 +53,10 @@ class Environment:
     def send_to_sim(self, sim):
         for eobj_key in self.eobjs:
             eobj = self.eobjs[eobj_key]
-            b_id = sim.send_box(x=eobj.x, y=eobj.y, z=eobj.z, length=eobj.l, width=eobj.w,
-                    height=eobj.h, mass=10, collision_group=eobj.cg, r=1, g=0, b=0)
+            b_id = sim.send_box(x=eobj.x, y=eobj.y, z=eobj.z,
+                    length=eobj.l, width=eobj.w, height=eobj.h,
+                    mass=10, collision_group=eobj.cg,
+                    r=eobj.r, g=eobj.g, b=eobj.b)
             if eobj.fixed:
                 if eobj.fixed_to == -1:
                     sim.send_fixed_joint(first_body_id=b_id, second_body_id=-1)
@@ -68,4 +64,3 @@ class Environment:
                     sim.send_fixed_joint(first_body_id=b_id, second_body_id=self.ids[eobj.fixed_to][0])
             if eobj.sensor == 'position':
                 self.ids[eobj.ref] = (b_id, sim.send_position_sensor(body_id=b_id))
-

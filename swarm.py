@@ -70,18 +70,18 @@ class Swarm:
 
         # gather sensor data for each robot
         tch_arr = []
-        vry_arr = []
+        ryd_arr = []
         pos_x_arr = []
         pos_y_arr = []
 
         for i in range(c.swm_size):
-            vry_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.AV)[-1])
+            ryd_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.AV)[-1])
             tch_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.T)[-1])
             pos_x_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.P, svi=0))
             pos_y_arr.append(self.sim.get_sensor_data(self.swm_pop[i].robot.P, svi=1))
 
         # calucate fitness variables
-        touch_thd = 1 if min(tch_arr) == 1 and max(vry_arr) < 0.1 else 0
+        touch_thd = 1 if min(tch_arr) == 1 and max(ryd_arr) < 0.1 else 0
         plt_x_end = plt_pos_x_data[-1]
         plt_y_end = plt_pos_y_data[-1]
         plt_z_end = plt_pos_z_data[-1]
