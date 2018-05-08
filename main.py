@@ -43,11 +43,9 @@ def simulate(init_pop=None, interval=-1, len_time=-1, save_indv=True,
     process_pop_dat(0, parents, start_pos_data, end_pos_data,
             fitness_data)
 
-    for i in range(1, num_iter):
-        # check if time limit has been exceeded
-        if len_time > 0 and end_time - start_time > len_time:
-            break
-
+    i = 1
+    while (i < num_iter and len_time == -1
+            or end_time - start_time <= len_time):
         # create an empty population
         children = Population(0)
 
@@ -62,6 +60,8 @@ def simulate(init_pop=None, interval=-1, len_time=-1, save_indv=True,
 
         process_pop_dat(i, parents, start_pos_data, end_pos_data,
                 fitness_data)
+
+        i += 1
 
     print("Time elapsed: ", end_time - start_time, "sec")
 
